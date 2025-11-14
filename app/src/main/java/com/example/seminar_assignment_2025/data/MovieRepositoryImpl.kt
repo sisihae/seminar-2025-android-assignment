@@ -23,10 +23,10 @@ class MovieRepositoryImpl @Inject constructor(
 ) : MovieRepository {
 
     private val genreMap: Map<Int, String> = mapOf(
-        28 to "액션", 12 to "모험", 16 to "애니메이션", 35 to "코미디", 80 to "범죄",
-        99 to "다큐멘터리", 18 to "드라마", 10751 to "가족", 14 to "판타지", 36 to "역사",
-        27 to "공포", 10402 to "음악", 9648 to "미스터리", 10749 to "로맨스", 878 to "SF",
-        10770 to "TV 영화", 53 to "스릴러", 10752 to "전쟁", 37 to "서부"
+        28 to "Action", 12 to "Adventure", 16 to "Animation", 35 to "Comedy", 80 to "Crime",
+        99 to "Documentary", 18 to "Drama", 10751 to "Family", 14 to "Fantasy", 36 to "History",
+        27 to "Horror", 10402 to "Music", 9648 to "Mystery", 10749 to "Romance", 878 to "Science Fiction",
+        10770 to "TV Movie", 53 to "Thriller", 10752 to "War", 37 to "Western"
     )
 
     override suspend fun searchByTitle(query: String): List<Movie> {
