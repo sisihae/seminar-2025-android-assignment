@@ -29,6 +29,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,100 +39,108 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.seminar_assignment_2025.data.Movie
-import com.example.seminar_assignment_2025.ui.search.SearchViewModel
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailScreen(movie: Movie, navController: NavController, viewModel: SearchViewModel) {
+fun MovieDetailScreen(movieId: Int, navController: NavController, viewModel: MovieDetailViewModel = hiltViewModel()) {
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(movie.title, fontSize = 16.sp) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier.size(width = 22.dp, height = 25.dp)
-                    ) {
-                        Icon(Icons.Default.ArrowBack, "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black
-                ),
-                modifier = Modifier.height(35.dp)
-            )
-        }
-    ) { innerPadding ->
-        LazyColumn(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
-            item {
-                Box(modifier = Modifier.height(301.dp)) {
-                    AsyncImage(
-                        model = "https://image.tmdb.org/t/p/original${movie.backdropPath}",
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.4f))
-                    )
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Card(
-                            modifier = Modifier.size(164.dp, 246.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    LaunchedEffect(key1 = movieId) {
+        viewModel.getMovieDetail(movieId)
+    }
+
+    val movie by viewModel.movieDetail.collectAsState()
+
+    movie?.let { movieDetail ->
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text(movieDetail.title, fontSize = 16.sp) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.size(width = 22.dp, height = 25.dp)
                         ) {
-                            AsyncImage(
-                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                                contentDescription = movie.title,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
+                            Icon(Icons.Default.ArrowBack, "Back")
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text(
-                                text = movie.title,
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            StarRating(rating = movie.voteAverage)
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.White,
+                        titleContentColor = Color.Black,
+                        navigationIconContentColor = Color.Black
+                    ),
+                    modifier = Modifier.height(35.dp)
+                )
+            }
+        ) { innerPadding ->
+            LazyColumn(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
+                item {
+                    Box(modifier = Modifier.height(301.dp)) {
+                        AsyncImage(
+                            model = "https://image.tmdb.org/t/p/original${movieDetail.backdropPath}",
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.4f))
+                        )
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Card(
+                                modifier = Modifier.size(164.dp, 246.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                            ) {
+                                AsyncImage(
+                                    model = "https://image.tmdb.org/t/p/w500${movieDetail.posterPath}",
+                                    contentDescription = movieDetail.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = movieDetail.title,
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                StarRating(rating = movieDetail.voteAverage)
+                            }
                         }
                     }
                 }
-            }
 
-            item {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        movie.genreIds.forEach { genreId ->
-                            Chip(label = viewModel.getGenreName(genreId))
+                item {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            movieDetail.genreIds.forEach { genreId ->
+                                Chip(label = viewModel.getGenreName(genreId))
+                            }
                         }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text("Summary", style = MaterialTheme.typography.titleLarge, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(movieDetail.overview, style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text("Popularity", style = MaterialTheme.typography.titleLarge, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(movieDetail.popularity.toString(), style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
                     }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text("Summary", style = MaterialTheme.typography.titleLarge, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(movie.overview, style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text("Popularity", style = MaterialTheme.typography.titleLarge, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(movie.popularity.toString(), style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
                 }
             }
         }

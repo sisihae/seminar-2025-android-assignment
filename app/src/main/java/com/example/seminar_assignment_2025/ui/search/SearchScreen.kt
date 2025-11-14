@@ -1,6 +1,5 @@
 package com.example.seminar_assignment_2025.ui.search
 
-import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,29 +37,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.seminar_assignment_2025.R
 import com.example.seminar_assignment_2025.data.Movie
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.net.URLEncoder
 import kotlin.math.roundToInt
 
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: SearchViewModel = viewModel(
-        factory = SearchViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    viewModel: SearchViewModel = hiltViewModel()
 ) {
     val searchHistory by viewModel.searchHistory.collectAsState()
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
@@ -92,9 +85,7 @@ fun SearchScreen(
             }
         } else {
             SearchResultList(movies = searchResults, viewModel = viewModel) { movie ->
-                val movieJson = Json.encodeToString(movie)
-                val encodedMovieJson = URLEncoder.encode(movieJson, "UTF-8")
-                navController.navigate("movieDetail/$encodedMovieJson")
+                navController.navigate("movieDetail/${movie.id}")
             }
         }
     }
