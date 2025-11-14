@@ -2,6 +2,7 @@ package com.example.seminar_assignment_2025.ui.detail
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -43,6 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.seminar_assignment_2025.data.Movie
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +63,7 @@ fun MovieDetailScreen(movieId: Int, navController: NavController, viewModel: Mov
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(movieDetail.title, fontSize = 16.sp) },
+                    title = { Text(movieDetail.title, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 16.sp) },
                     navigationIcon = {
                         IconButton(
                             onClick = { navController.popBackStack() },
@@ -116,10 +120,12 @@ fun MovieDetailScreen(movieId: Int, navController: NavController, viewModel: Mov
                                     text = movieDetail.title,
                                     color = Color.White,
                                     fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.ExtraBold
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 StarRating(rating = movieDetail.voteAverage)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                MovieMetadata(movie = movieDetail)
                             }
                         }
                     }
@@ -127,22 +133,59 @@ fun MovieDetailScreen(movieId: Int, navController: NavController, viewModel: Mov
 
                 item {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            modifier = Modifier.horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             movieDetail.genreIds.forEach { genreId ->
                                 Chip(label = viewModel.getGenreName(genreId))
                             }
                         }
                         Spacer(modifier = Modifier.height(24.dp))
-                        Text("Summary", style = MaterialTheme.typography.titleLarge, fontSize = 16.sp)
+                        Text("Summary", style = MaterialTheme.typography.titleLarge, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(movieDetail.overview, style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
+                        Text(movieDetail.overview, style = MaterialTheme.typography.bodyLarge, color = Color.Black, fontWeight = FontWeight.Light, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(24.dp))
-                        Text("Popularity", style = MaterialTheme.typography.titleLarge, fontSize = 14.sp)
+                        Text("Original Title", style = MaterialTheme.typography.titleLarge, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(movieDetail.popularity.toString(), style = MaterialTheme.typography.bodyLarge, fontSize = 12.sp)
+                        Text(movieDetail.originalTitle, style = MaterialTheme.typography.bodyLarge, color = Color.Black, fontWeight = FontWeight.Light, fontSize = 12.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text("Status", style = MaterialTheme.typography.titleLarge, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(movieDetail.status ?: "", style = MaterialTheme.typography.bodyLarge, color = Color.Black, fontWeight = FontWeight.Light, fontSize = 12.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text("Budget", style = MaterialTheme.typography.titleLarge, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(formatCurrency(movieDetail.budget), style = MaterialTheme.typography.bodyLarge, color = Color.Black, fontWeight = FontWeight.Light, fontSize = 12.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text("Revenue", style = MaterialTheme.typography.titleLarge, color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(formatCurrency(movieDetail.revenue), style = MaterialTheme.typography.bodyLarge, color = Color.Black, fontWeight = FontWeight.Light, fontSize = 12.sp)
                     }
                 }
             }
+        }
+    }
+}
+
+private fun formatCurrency(amount: Long?): String {
+    if (amount == null || amount == 0L) return "-"
+    return NumberFormat.getCurrencyInstance(Locale.US).apply {
+        maximumFractionDigits = 0
+    }.format(amount)
+}
+
+@Composable
+fun MovieMetadata(movie: Movie) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        movie.runtime?.let {
+            Text("${it / 60}h ${it % 60}m", color = Color.White, fontWeight = FontWeight.Light, fontSize = 10.sp)
+        }
+        Text(movie.releaseDate.substring(0, 4), color = Color.White, fontWeight = FontWeight.Light, fontSize = 10.sp)
+        if (movie.adult) {
+            Text("R18+", color = Color.Red, fontWeight = FontWeight.Medium, fontSize = 10.sp)
+        } else {
+            Text("All Ages", color = Color.White, fontWeight = FontWeight.Light, fontSize = 10.sp)
         }
     }
 }
@@ -158,6 +201,7 @@ fun Chip(label: String) {
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            color = Color.Black,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp
         )
@@ -170,7 +214,7 @@ fun StarRating(rating: Double) {
         Text(
             text = String.format("%.1f", rating),
             color = Color.White,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             fontSize = 14.sp,
         )
         Spacer(Modifier.width(8.dp))
