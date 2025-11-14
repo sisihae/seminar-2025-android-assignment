@@ -1,17 +1,19 @@
-package com.example.seminar_assignment_2025.ui.search
+package com.example.seminar_assignment_2025.views.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.seminar_assignment_2025.data.Movie
-import com.example.seminar_assignment_2025.data.MovieRepository
-import com.example.seminar_assignment_2025.data.SearchHistoryRepository
+import com.example.seminar_assignment_2025.domainmodel.Movie
+import com.example.seminar_assignment_2025.data.movie.MovieRepository
+import com.example.seminar_assignment_2025.data.search.SearchHistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,31 +33,43 @@ class SearchViewModel @Inject constructor(
 
     fun addSearchTerm(term: String) {
         viewModelScope.launch {
-            searchHistoryRepository.addSearchTerm(term)
+            withContext(Dispatchers.IO) {
+                searchHistoryRepository.addSearchTerm(term)
+            }
         }
     }
 
     fun removeSearchTerm(term: String) {
         viewModelScope.launch {
-            searchHistoryRepository.removeSearchTerm(term)
+            withContext(Dispatchers.IO) {
+                searchHistoryRepository.removeSearchTerm(term)
+            }
         }
     }
 
     fun clearSearchHistory() {
         viewModelScope.launch {
-            searchHistoryRepository.clearSearchHistory()
+            withContext(Dispatchers.IO) {
+                searchHistoryRepository.clearSearchHistory()
+            }
         }
     }
 
     fun searchByTitle(query: String) {
         viewModelScope.launch {
-            _searchResults.value = movieRepository.searchByTitle(query)
+            val results = withContext(Dispatchers.IO) {
+                movieRepository.searchByTitle(query)
+            }
+            _searchResults.value = results
         }
     }
 
     fun getMovieDetail(movieId: Int) {
         viewModelScope.launch {
-            _movieDetail.value = movieRepository.getMovieDetail(movieId)
+            val detail = withContext(Dispatchers.IO) {
+                movieRepository.getMovieDetail(movieId)
+            }
+            _movieDetail.value = detail
         }
     }
 

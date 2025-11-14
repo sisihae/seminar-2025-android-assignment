@@ -1,4 +1,4 @@
-package com.example.seminar_assignment_2025.data
+package com.example.seminar_assignment_2025.data.search
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -6,46 +6,47 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "search_history")
 
 @Singleton
-class SearchHistoryRepository(context: Context) {
+class SearchHistoryRepositoryImpl @Inject constructor(
+    @ApplicationContext context: Context
+) : SearchHistoryRepository {
 
     private val dataStore = context.dataStore
 
-    // DataStore에 데이터를 저장하기 위한 Key
     private companion object {
         val RECENT_SEARCHES_KEY = stringPreferencesKey("recent_searches")
     }
 
-    val searchHistory: Flow<List<String>> = dataStore.data.map { preferences ->
+    override val searchHistory: Flow<List<String>> = dataStore.data.map { preferences ->
         val jsonString = preferences[RECENT_SEARCHES_KEY] ?: "[]"
         Json.decodeFromString<List<String>>(jsonString)
     }
 
-    suspend fun addSearchTerm(term: String) {
+    override suspend fun addSearchTerm(term: String) {
         dataStore.edit { preferences ->
             val currentSearchesJson = preferences[RECENT_SEARCHES_KEY] ?: "[]"
             val currentSearches = Json.decodeFromString<MutableList<String>>(currentSearchesJson)
 
-            // 이미 있는 검색어는 삭제 후 맨 위로 올림
             currentSearches.remove(term)
-            currentSearches.add(0, term) // 맨 앞에 추가
+            currentSearches.add(0, term)
 
-            // 최대 10개까지만 저장 (예시)
             val updatedSearches = currentSearches.take(10)
 
             preferences[RECENT_SEARCHES_KEY] = Json.encodeToString(updatedSearches)
         }
     }
 
-    suspend fun removeSearchTerm(term: String) {
+    override suspend fun removeSearchTerm(term: String) {
         dataStore.edit { preferences ->
             val currentSearchesJson = preferences[RECENT_SEARCHES_KEY] ?: "[]"
             val currentSearches = Json.decodeFromString<MutableList<String>>(currentSearchesJson)
@@ -54,7 +55,7 @@ class SearchHistoryRepository(context: Context) {
         }
     }
 
-    suspend fun clearSearchHistory() {
+    override suspend fun clearSearchHistory() {
         dataStore.edit { preferences ->
             preferences[RECENT_SEARCHES_KEY] = "[]"
         }

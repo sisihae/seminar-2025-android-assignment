@@ -25,9 +25,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.seminar_assignment_2025.ui.GameScreen
-import com.example.seminar_assignment_2025.ui.detail.MovieDetailScreen
-import com.example.seminar_assignment_2025.ui.search.SearchScreen
+import com.example.seminar_assignment_2025.views.game.GameScreen
+import com.example.seminar_assignment_2025.views.detail.MovieDetailScreen
+import com.example.seminar_assignment_2025.views.search.SearchScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

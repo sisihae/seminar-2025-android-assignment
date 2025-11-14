@@ -1,40 +1,8 @@
-package com.example.seminar_assignment_2025.data
+package com.example.seminar_assignment_2025.data.movie
 
 import com.example.seminar_assignment_2025.data.remote.MovieApiService
-import com.example.seminar_assignment_2025.data.remote.MovieDto
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.example.seminar_assignment_2025.domainmodel.Movie
 import javax.inject.Inject
-
-@Serializable
-data class MovieDto(
-    val id: Int,
-    val title: String,
-    @SerialName("release_date") val releaseDate: String,
-    @SerialName("vote_average") val voteAverage: Double,
-    @SerialName("poster_path") val posterPath: String?,
-    @SerialName("genre_ids") val genreIds: List<Int>,
-    @SerialName("backdrop_path") val backdropPath: String?,
-    val overview: String?,
-    val popularity: Double,
-    val adult: Boolean,
-    val runtime: Int? = null,
-    @SerialName("original_title") val originalTitle: String,
-    val status: String?,
-    val budget: Long?,
-    val revenue: Long?
-)
-
-@Serializable
-data class GenreDto(
-    val id: Int,
-    val name: String
-)
-
-@Serializable
-data class GenreListDto(
-    val genres: List<GenreDto>
-)
 
 class MovieRepositoryImpl @Inject constructor(
     private val movieApiService: MovieApiService
@@ -60,11 +28,11 @@ class MovieRepositoryImpl @Inject constructor(
                 overview = dto.overview ?: "",
                 popularity = dto.popularity,
                 adult = dto.adult,
-                runtime = dto.runtime,
-                originalTitle = dto.originalTitle,
-                status = dto.status,
-                budget = dto.budget,
-                revenue = dto.revenue
+                runtime = null, // Search result does not provide runtime
+                originalTitle = dto.title, // Search result does not provide original_title
+                status = null, // Search result does not provide status
+                budget = null, // Search result does not provide budget
+                revenue = null // Search result does not provide revenue
             )
         }
     }
@@ -77,7 +45,7 @@ class MovieRepositoryImpl @Inject constructor(
             releaseDate = dto.releaseDate,
             voteAverage = dto.voteAverage,
             posterPath = dto.posterPath ?: "",
-            genreIds = dto.genreIds,
+            genreIds = dto.genres.map { it.id },
             backdropPath = dto.backdropPath ?: "",
             overview = dto.overview ?: "",
             popularity = dto.popularity,

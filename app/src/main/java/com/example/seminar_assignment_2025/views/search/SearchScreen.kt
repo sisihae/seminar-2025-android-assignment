@@ -1,4 +1,4 @@
-package com.example.seminar_assignment_2025.ui.search
+package com.example.seminar_assignment_2025.views.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.seminar_assignment_2025.R
-import com.example.seminar_assignment_2025.data.Movie
+import com.example.seminar_assignment_2025.domainmodel.Movie
 import kotlin.math.roundToInt
 
 @Composable
