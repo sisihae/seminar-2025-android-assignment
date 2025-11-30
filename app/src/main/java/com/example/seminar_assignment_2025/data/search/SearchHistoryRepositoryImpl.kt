@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,15 +28,28 @@ class SearchHistoryRepositoryImpl @Inject constructor(
         val RECENT_SEARCHES_KEY = stringPreferencesKey("recent_searches")
     }
 
-    override val searchHistory: Flow<List<String>> = dataStore.data.map { preferences ->
-        val jsonString = preferences[RECENT_SEARCHES_KEY] ?: "[]"
-        Json.decodeFromString<List<String>>(jsonString)
-    }
+    override val searchHistory: Flow<List<String>> = dataStore.data
+        .catch { exception ->
+            // Handle dataStore read errors
+            emit(androidx.datastore.preferences.core.emptyPreferences())
+        }
+        .map { preferences ->
+            val jsonString = preferences[RECENT_SEARCHES_KEY] ?: "[]"
+            try {
+                Json.decodeFromString<List<String>>(jsonString)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
 
     override suspend fun addSearchTerm(term: String) {
         dataStore.edit { preferences ->
             val currentSearchesJson = preferences[RECENT_SEARCHES_KEY] ?: "[]"
-            val currentSearches = Json.decodeFromString<MutableList<String>>(currentSearchesJson)
+            val currentSearches = try {
+                Json.decodeFromString<MutableList<String>>(currentSearchesJson)
+            } catch (e: Exception) {
+                mutableListOf()
+            }
 
             currentSearches.remove(term)
             currentSearches.add(0, term)
@@ -49,7 +63,11 @@ class SearchHistoryRepositoryImpl @Inject constructor(
     override suspend fun removeSearchTerm(term: String) {
         dataStore.edit { preferences ->
             val currentSearchesJson = preferences[RECENT_SEARCHES_KEY] ?: "[]"
-            val currentSearches = Json.decodeFromString<MutableList<String>>(currentSearchesJson)
+            val currentSearches = try {
+                Json.decodeFromString<MutableList<String>>(currentSearchesJson)
+            } catch (e: Exception) {
+                mutableListOf()
+            }
             currentSearches.remove(term)
             preferences[RECENT_SEARCHES_KEY] = Json.encodeToString(currentSearches)
         }

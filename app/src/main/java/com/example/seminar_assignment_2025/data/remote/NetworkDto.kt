@@ -12,33 +12,33 @@ data class SearchMovieResponse(
 data class MovieListItemDto(
     val id: Int,
     val title: String,
-    @SerialName("release_date") val releaseDate: String,
-    @SerialName("vote_average") val voteAverage: Double,
-    @SerialName("poster_path") val posterPath: String?,
-    @SerialName("genre_ids") val genreIds: List<Int>,
-    @SerialName("backdrop_path") val backdropPath: String?,
-    val overview: String?,
-    val popularity: Double,
-    val adult: Boolean
+    @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("vote_average") val voteAverage: Double = 0.0,
+    @SerialName("poster_path") val posterPath: String? = null,
+    @SerialName("genre_ids") val genreIds: List<Int> = emptyList(),
+    @SerialName("backdrop_path") val backdropPath: String? = null,
+    val overview: String? = null,
+    val popularity: Double = 0.0,
+    val adult: Boolean = false
 )
 
 @Serializable
 data class MovieDetailDto(
     val id: Int,
     val title: String,
-    @SerialName("release_date") val releaseDate: String,
-    @SerialName("vote_average") val voteAverage: Double,
-    @SerialName("poster_path") val posterPath: String?,
-    val genres: List<GenreDto>,
-    @SerialName("backdrop_path") val backdropPath: String?,
-    val overview: String?,
-    val popularity: Double,
-    val adult: Boolean,
+    @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("vote_average") val voteAverage: Double = 0.0,
+    @SerialName("poster_path") val posterPath: String? = null,
+    val genres: List<GenreDto> = emptyList(),
+    @SerialName("backdrop_path") val backdropPath: String? = null,
+    val overview: String? = null,
+    val popularity: Double = 0.0,
+    val adult: Boolean = false,
     val runtime: Int? = null,
-    @SerialName("original_title") val originalTitle: String,
-    val status: String?,
-    val budget: Long?,
-    val revenue: Long?
+    @SerialName("original_title") val originalTitle: String? = null,
+    val status: String? = null,
+    val budget: Long? = null,
+    val revenue: Long? = null
 )
 
 @Serializable

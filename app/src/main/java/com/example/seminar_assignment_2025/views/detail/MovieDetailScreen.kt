@@ -132,12 +132,12 @@ fun MovieDetailScreen(movieId: Int, navController: NavController, viewModel: Mov
                             StarRating(rating = movieDetail.voteAverage)
                             Spacer(modifier = Modifier.height(8.dp))
                             MovieMetadata(movie = movieDetail)
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(40.dp))
                         }
                     }
                 }
 
-                Column(modifier = Modifier.padding(top = 56.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) { // Add top padding to avoid overlap
+                Column(modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) { // Add top padding to avoid overlap
                     Row(
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)

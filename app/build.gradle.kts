@@ -44,6 +44,22 @@ android {
         compose = true
         buildConfig = true
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(project.property("MY_KEYSTORE_FILE") as String)
+            storePassword = project.property("MY_KEYSTORE_PASSWORD") as String
+            keyAlias = project.property("MY_KEY_ALIAS") as String
+            keyPassword = project.property("MY_KEY_PASSWORD") as String
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
 
 configurations.all {

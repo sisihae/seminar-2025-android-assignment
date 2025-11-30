@@ -33,43 +33,66 @@ class SearchViewModel @Inject constructor(
 
     fun addSearchTerm(term: String) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                searchHistoryRepository.addSearchTerm(term)
+            try {
+                withContext(Dispatchers.IO) {
+                    searchHistoryRepository.addSearchTerm(term)
+                }
+            } catch (e: Exception) {
+                // Handle exception, maybe log it or show a user-friendly message
+                e.printStackTrace()
             }
         }
     }
 
     fun removeSearchTerm(term: String) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                searchHistoryRepository.removeSearchTerm(term)
+            try {
+                withContext(Dispatchers.IO) {
+                    searchHistoryRepository.removeSearchTerm(term)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
 
     fun clearSearchHistory() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                searchHistoryRepository.clearSearchHistory()
+            try {
+                withContext(Dispatchers.IO) {
+                    searchHistoryRepository.clearSearchHistory()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
 
     fun searchByTitle(query: String) {
         viewModelScope.launch {
-            val results = withContext(Dispatchers.IO) {
-                movieRepository.searchByTitle(query)
+            try {
+                val results = withContext(Dispatchers.IO) {
+                    movieRepository.searchByTitle(query)
+                }
+                _searchResults.value = results
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _searchResults.value = emptyList() // Optionally clear results on error
             }
-            _searchResults.value = results
         }
     }
 
     fun getMovieDetail(movieId: Int) {
         viewModelScope.launch {
-            val detail = withContext(Dispatchers.IO) {
-                movieRepository.getMovieDetail(movieId)
+            try {
+                val detail = withContext(Dispatchers.IO) {
+                    movieRepository.getMovieDetail(movieId)
+                }
+                _movieDetail.value = detail
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _movieDetail.value = null // Optionally clear detail on error
             }
-            _movieDetail.value = detail
         }
     }
 

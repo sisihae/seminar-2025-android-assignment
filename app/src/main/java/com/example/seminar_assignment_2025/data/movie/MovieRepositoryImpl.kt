@@ -20,7 +20,7 @@ class MovieRepositoryImpl @Inject constructor(
             Movie(
                 id = dto.id,
                 title = dto.title,
-                releaseDate = dto.releaseDate,
+                releaseDate = dto.releaseDate ?: "",
                 voteAverage = dto.voteAverage,
                 posterPath = dto.posterPath ?: "",
                 genreIds = dto.genreIds,
@@ -28,11 +28,11 @@ class MovieRepositoryImpl @Inject constructor(
                 overview = dto.overview ?: "",
                 popularity = dto.popularity,
                 adult = dto.adult,
-                runtime = null, // Search result does not provide runtime
-                originalTitle = dto.title, // Search result does not provide original_title
-                status = null, // Search result does not provide status
-                budget = null, // Search result does not provide budget
-                revenue = null // Search result does not provide revenue
+                runtime = null, 
+                originalTitle = dto.title, 
+                status = null, 
+                budget = null, 
+                revenue = null 
             )
         }
     }
@@ -42,7 +42,7 @@ class MovieRepositoryImpl @Inject constructor(
         return Movie(
             id = dto.id,
             title = dto.title,
-            releaseDate = dto.releaseDate,
+            releaseDate = dto.releaseDate ?: "",
             voteAverage = dto.voteAverage,
             posterPath = dto.posterPath ?: "",
             genreIds = dto.genres.map { it.id },
@@ -51,10 +51,10 @@ class MovieRepositoryImpl @Inject constructor(
             popularity = dto.popularity,
             adult = dto.adult,
             runtime = dto.runtime,
-            originalTitle = dto.originalTitle,
-            status = dto.status,
-            budget = dto.budget,
-            revenue = dto.revenue
+            originalTitle = dto.originalTitle ?: "",
+            status = dto.status ?: "",
+            budget = dto.budget ?: 0L,
+            revenue = dto.revenue ?: 0L
         )
     }
 
